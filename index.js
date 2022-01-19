@@ -15,8 +15,8 @@ app.get('/', (_request, response) => {
 });
 
 app.get('/talker', (_request, response) => {
-  const data = fs.readFileSync(talker, 'utf-8');
-  response.status(HTTP_OK_STATUS).json(JSON.parse(data));
+  const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
+  response.status(HTTP_OK_STATUS).json(data);
 });
 
 app.get('/talker/:id', (request, response) => {
