@@ -3,7 +3,7 @@ const CryptoJS = require('crypto-js');
 function tokenGenerator(authInfo) {
   const auth = JSON.stringify(authInfo);
   const salt = CryptoJS.lib.WordArray.random();
-  return CryptoJS.PBKDF2(auth, salt, { keySize: 2 });
+  return CryptoJS.PBKDF2(auth, salt, { keySize: 2 }).toString();
 }
 
 module.exports = tokenGenerator;
