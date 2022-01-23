@@ -1,6 +1,9 @@
 const express = require('express');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const tokenGenerator = require('./api/helpers/tokenGenerator');
+const { thereIsAEmail, isValidEmail } = require('./api/middlewares/isValidEmail');
+const { haveSixCharacters, thereIsAPassword } = require('./api/middlewares/isValidPassword');
 
 const app = express();
 app.use(bodyParser.json());
@@ -28,6 +31,12 @@ app.get('/talker/:id', (request, response) => {
   } else {
     response.status(HTTP_OK_STATUS).json(requestedData[0]);
   }
+});
+
+app.post('/login', thereIsAEmail, isValidEmail, thereIsAPassword, haveSixCharacters, (req, res) => {
+  const { email, password } = req.body;
+  const token = tokenGenerator(req.body);
+  res.status(200).json({ token, email, password });
 });
 
 app.listen(PORT, () => {
