@@ -5,7 +5,7 @@ const tokenGenerator = require('./api/helpers/tokenGenerator');
 const { thereIsAEmail, isValidEmail } = require('./api/middlewares/isValidEmail');
 const { haveSixCharacters, thereIsAPassword } = require('./api/middlewares/isValidPassword');
 const validateToken = require('./api/middlewares/validateToken');
-const { thereIsTalk, validateTalk } = require('./api/middlewares/validateTalk');
+const { validateTalk, validateRate, validateDate } = require('./api/middlewares/validateTalk');
 const validateName = require('./api/middlewares/validateName');
 const validateAge = require('./api/middlewares/validateAge');
 
@@ -30,8 +30,9 @@ app.post('/talker',
   validateToken,
   validateName,
   validateAge,
-  thereIsTalk,
   validateTalk,
+  validateDate,
+  validateRate,
   (request, response) => {
   const talkerRequest = request.body;
   const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
@@ -53,6 +54,26 @@ app.get('/talker/:id', (request, response) => {
   }
 });
 
+app.put('/talker/:id',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateDate,
+  validateRate,
+  (request, response) => {
+  const { id } = request.params;
+  const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
+
+  const modifiedData = data.reduce((acc, curr) => {
+    if (curr.id === parseInt(id, 10)) return [...acc, { id: parseInt(id, 10), ...request.body }];
+    return [...acc, curr];
+  }, []);
+
+  fs.writeFileSync(talker, JSON.stringify(modifiedData), 'utf-8');
+  response.status(HTTP_OK_STATUS).json({ id: parseInt(id, 10), ...request.body });
+});
+
 app.post('/login',
   thereIsAEmail,
   isValidEmail,
@@ -60,7 +81,7 @@ app.post('/login',
   haveSixCharacters,
   (request, response) => {
   const token = tokenGenerator(request.body);
-  response.status(200).json({ token });
+  response.status(HTTP_OK_STATUS).json({ token });
 });
 
 app.listen(PORT, () => {
