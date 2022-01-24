@@ -84,6 +84,16 @@ app.post('/login',
   response.status(HTTP_OK_STATUS).json({ token });
 });
 
+app.delete('/talker/:id', validateToken, (request, response) => {
+  const { id } = request.params;
+  const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
+  const dataWithoutDeleted = data
+    .filter((selectedTalker) => selectedTalker.id !== parseInt(id, 10));
+
+  fs.writeFileSync(talker, JSON.stringify(dataWithoutDeleted), 'utf-8');
+  response.status(204).end();
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
