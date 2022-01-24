@@ -35,10 +35,11 @@ app.post('/talker',
   (request, response) => {
   const talkerRequest = request.body;
   const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
-  response.status(201).json({
-    id: data.length + 1,
-    ...talkerRequest,
-  });
+  fs.writeFileSync(talker, JSON.stringify([
+    ...data,
+    { id: data.length + 1, ...talkerRequest },
+  ]), 'utf-8');
+  response.status(201).json({ id: data.length + 1, ...talkerRequest });
 });
 
 app.get('/talker/:id', (request, response) => {
