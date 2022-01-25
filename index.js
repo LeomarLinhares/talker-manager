@@ -21,6 +21,16 @@ app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
 });
 
+app.get('/talker/search', validateToken, (request, response) => {
+  const { q: query } = request.query;
+  const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
+  const filteredData = data.filter((selectedTalker) => {
+    const match = selectedTalker.name.toLowerCase().search(query.toLowerCase());
+    return match > -1;
+  });
+  response.status(200).json(filteredData);
+});
+
 app.get('/talker', (_request, response) => {
   const data = JSON.parse(fs.readFileSync(talker, 'utf-8'));
   response.status(HTTP_OK_STATUS).json(data);
